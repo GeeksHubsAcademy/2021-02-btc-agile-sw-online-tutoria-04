@@ -1,13 +1,27 @@
-import { RepositoryImpl } from './../src/es/geekshubs/academy/kata3/repository/RepositoryImpl';
-import { Repository } from './../src/es/geekshubs/academy/kata3/repository/Repository';
-import { Animal } from "../src/es/geekshubs/academy/kata3/model/animal/Animal";
-import { AnimalImpl } from "../src/es/geekshubs/academy/kata3/model/animal/AnimalImpl";
-import { HorseImpl } from "../src/es/geekshubs/academy/kata3/model/horse/HoreImpl";
-import { Horse } from "../src/es/geekshubs/academy/kata3/model/horse/Horse";
-import { Snake } from "../src/es/geekshubs/academy/kata3/model/snake/Snake";
-import { SnakeImpl } from "../src/es/geekshubs/academy/kata3/model/snake/SnakeImpl";
-import { Builder } from '../src/es/geekshubs/academy/kata3/bulider/Builder';
-import { ServiceImpl } from '../src/es/geekshubs/academy/kata3/service/ServiceImpl';
+import { BuilderAnimal } from './../../../../../src/es/geekshubs/academy/kata3/animal/bulider/BuilderAnimal';
+import { RepositoryImpl } from '../../../../../src/es/geekshubs/academy/kata3/fwk/repository/RepositoryImpl';
+import { Repository } from '../../../../../src/es/geekshubs/academy/kata3/fwk/repository/Repository';
+import { Animal } from "../../../../../src/es/geekshubs/academy/kata3/animal/model/animal/Animal";
+import { AnimalImpl } from "../../../../../src/es/geekshubs/academy/kata3/animal/model/animal/AnimalImpl";
+import { HorseImpl } from "../../../../../src/es/geekshubs/academy/kata3/animal/model/horse/HoreImpl";
+import { Horse } from "../../../../../src/es/geekshubs/academy/kata3/animal/model/horse/Horse";
+import { Snake } from "../../../../../src/es/geekshubs/academy/kata3/animal/model/snake/Snake";
+import { SnakeImpl } from "../../../../../src/es/geekshubs/academy/kata3/animal/model/snake/SnakeImpl";
+import { ServiceImpl } from '../../../../../src/es/geekshubs/academy/kata3/fwk/service/ServiceImpl';
+
+const listMock = () => {
+    const listMock = new Array<number>();
+    listMock.push(1);
+    listMock.push(2);
+    listMock.push(3);
+    return listMock;
+}
+
+const cookingMock = () => {
+    const list = listMock();
+    var mock = jest.fn().mockReturnValue(list);
+    return mock();
+}
 
 describe('Testing', function (){
 
@@ -68,19 +82,51 @@ describe('Testing', function (){
 
     /// REPOSITORY + BUILDER ///
 
-    test('Repository api getList', function () {
+    
+    test('Repository<T extends number> api getList', function () {
+       
         //Arrange
-        var expected = new Builder().list;
+        var resultMock = cookingMock();
         //Act
-        var result : Repository  = new RepositoryImpl(expected);
+        var result : Repository<number>  = new RepositoryImpl(resultMock);
+
+        //Assert
+        expect(result.getList()).toEqual(listMock());
+    });
+
+    test('Repository api getList Animal', function () {
+        //Arrange
+        var expected = new BuilderAnimal().list;
+        //Act
+        var result : Repository<Animal>  = new RepositoryImpl(expected);
         //Assert
         expect(result.getList()).toEqual(expected);
+    });
+
+    
+    test('Repository api getList Animal', function () {
+        //Arrange
+        var expected = new BuilderAnimal().list;
+        //Act
+        var result  = new RepositoryImpl(expected);
+        //Assert
+        expect(result.getList()).toEqual(expected);
+    });
+
+    
+    test('Repository<T> api getList', function () {
+        //Arrange
+        var resultMock = cookingMock();
+        //Act
+        var result  = new RepositoryImpl<number>(resultMock);
+        //Assert
+        expect(result.getList()).toEqual(listMock());
     });
 
 
     test('service - shift', function () {
         //Arrange
-        var builder = new Builder().list;
+        var builder = new BuilderAnimal().list;
         var repository = new RepositoryImpl(builder);
 
         var horseExpected = builder[0];
@@ -95,7 +141,7 @@ describe('Testing', function (){
     
     test('service - pop', function () {
         //Arrange
-        var builder = new Builder().list;
+        var builder = new BuilderAnimal().list;
         var repository = new RepositoryImpl(builder);
 
         var SnakeExpected = builder[builder.length-1];
@@ -111,7 +157,7 @@ describe('Testing', function (){
         //Arrange
         var animal = new AnimalImpl("Animal");
 
-        var builder = new Builder().list;
+        var builder = new BuilderAnimal().list;
         var repository = new RepositoryImpl(builder);
         //Act
         var service =  new ServiceImpl(repository);
@@ -125,7 +171,7 @@ describe('Testing', function (){
     test('service - get', function () {
         //Arrange
         const index = 1;
-        var builder = new Builder().list;
+        var builder = new BuilderAnimal().list;
         var repository = new RepositoryImpl(builder);
 
         var animal = builder[index];
@@ -139,7 +185,7 @@ describe('Testing', function (){
 
     test('service - length', function () {
         //Arrange
-        var builder = new Builder().list;
+        var builder = new BuilderAnimal().list;
         const expected = builder.length + 1;
         var repository = new RepositoryImpl(builder);
         //Act
@@ -148,6 +194,27 @@ describe('Testing', function (){
         const res = service.length();
         //Assert
         expect(res).toBe(expected);
-    });
+    }); 
+
+    
+    test('service<T extends number> - length', function () {
+        
+        //Arrange
+        const listMock = new Array<number>();
+        listMock.push(1);
+        listMock.push(2);
+        listMock.push(3);
+
+        var mock = jest.fn().mockReturnValue(listMock);
+        const expected = listMock.length + 1;
+        var repository = new RepositoryImpl<number>(mock());
+
+        //Act
+        var service =  new ServiceImpl<number>(repository);
+        service.put(5);
+        const res = service.length();
+        //Assert
+        expect(res).toBe(expected);
+    }); 
 
 });

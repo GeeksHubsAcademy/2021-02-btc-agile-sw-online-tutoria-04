@@ -1,25 +1,23 @@
-import { Builder } from '../bulider/Builder';
-import { Animal } from '../model/animal/Animal';
 import { Repository } from '../repository/Repository';
 import { Service } from './Service';
 
-export class ServiceImpl implements Service {
+export class ServiceImpl<T> implements Service<T> {
     
-    constructor(public repository : Repository) { }
+    constructor(public repository : Repository<T>) { }
 
-    get(index:number) : Animal{
+    get(index:number) : T {
         return this.getList()[index];
     }
 
-    put(animal: Animal) : number {
-        return this.getList().push(animal);
+    put(dato: T) : number {
+        return this.getList().push(dato);
     }
 
-    shift() : Animal {
+    shift() : T {
         return this.getList().shift()!;
     }
 
-    pop() : Animal {
+    pop() : T {
         return this.getList().pop()!;
     }
 

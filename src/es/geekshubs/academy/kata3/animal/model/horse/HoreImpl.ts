@@ -1,4 +1,4 @@
-import { AnimalImpl } from './../animal/AnimalImpl';
+import { AnimalImpl } from '../animal/AnimalImpl';
 import { Horse } from './Horse';
 
 export class HorseImpl extends AnimalImpl implements Horse {
